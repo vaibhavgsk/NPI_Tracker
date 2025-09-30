@@ -1,0 +1,36 @@
+name: Update Plotly HTML
+
+on:
+  push:
+    paths:
+      - template.xlsx       # Run workflow if this file changes
+      - main.py             # Or if main.py changes
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install pandas plotly openpyxl
+
+      - name: Run main.py to generate index.html
+        run: python main.py
+
+      - name: Commit and push updated index.html
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add index.html
+          git commit -m "Update index.html from Excel"
+          git push
+        continue-on-error: true
